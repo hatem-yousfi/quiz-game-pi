@@ -515,12 +515,10 @@
 
 
         // تهيئة Pi SDK
-        Pi.init({
+       Pi.init({
             version: "2.0",
-            // على Testnet:
-            // api_key: "YOUR_TESTNET_API_KEY_HERE", // استبدل هذا بمفتاح API الخاص بك من Pi Developer Portal (Testnet)
-            // على Mainnet (بعد الانتقال):
-            // api_key: "YOUR_MAINNET_API_KEY_HERE" // استبدل هذا بمفتاح API الخاص بك من Pi Developer Portal (Mainnet)
+            api_key: "YOUR_TESTNET_API_KEY_HERE", // هذا سيكون المفتاح الفعلي لاحقًا. اتركه كما هو الآن.
+            sandbox: true, // أضف هذا السطر لتفعيل وضع Sandbox
         });
 
         // وظائف الصوت
