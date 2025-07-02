@@ -518,11 +518,12 @@
 
         // تهيئة Pi SDK
      if (typeof Pi !== 'undefined') {
-    Pi.init({
-        version: "2.0",
-        api_key: "مفتاحك",
-        sandbox: true,
-    });
+   Pi.init({
+    version: "2.0",
+    api_key: "rqfi4ugck2tmbcaarbwjzjs98yql4rdra0aacuzqyv1wqp5wwvjrsp9bgdd6pnv4",
+    sandbox: true, // في حالة وضع الاختبار Testnet
+});
+
 } else {
     console.warn("Pi SDK غير متوفر، تأكد من فتح اللعبة داخل Pi Browser.");
 }
