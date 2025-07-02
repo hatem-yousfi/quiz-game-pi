@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -516,11 +517,16 @@
 
 
         // تهيئة Pi SDK
-      Pi.init({
-            version: "2.0",
-            api_key: "rqfi4ugck2tmbcaarbwjzjs98yql4rdra0aacuzqyv1wqp5wwvjrsp9bgdd6pnv4", // الصق المفتاح الذي نسخته هنا
-            sandbox: true, // تأكد من وجود هذا السطر إذا كنت في وضع الاختبار
-        });
+     if (typeof Pi !== 'undefined') {
+    Pi.init({
+        version: "2.0",
+        api_key: "مفتاحك",
+        sandbox: true,
+    });
+} else {
+    console.warn("Pi SDK غير متوفر، تأكد من فتح اللعبة داخل Pi Browser.");
+}
+
 
         // وظائف الصوت
         function createBeep(frequency, duration, type = 'sine') {
