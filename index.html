@@ -13,28 +13,28 @@
       box-sizing: border-box;
     }
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: white;
       overflow: hidden;
     }
     .loading-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.8);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      color: white;
       font-size: 1.5rem;
       text-align: center;
+      color: white;
     }
     .loading-spinner {
       border: 8px solid #f3f3f3;
@@ -46,19 +46,19 @@
       margin-bottom: 20px;
     }
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {transform: rotate(0deg);}
+      100% {transform: rotate(360deg);}
     }
     .game-container {
       max-width: 800px;
       width: 90%;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.1);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 30px;
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      display: none; /* مخفي في البداية */
+      box-shadow: 0 8px 32px rgba(31,38,135,0.37);
+      border: 1px solid rgba(255,255,255,0.18);
+      display: none;
     }
     .header {
       text-align: center;
@@ -67,7 +67,7 @@
     .title {
       font-size: 2.5rem;
       margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     .pi-icon {
       font-size: 3rem;
@@ -79,12 +79,12 @@
       color: #e0e0e0;
     }
     .score-container {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255,255,255,0.2);
       padding: 15px;
       border-radius: 15px;
       text-align: center;
       margin-bottom: 25px;
-      border: 2px solid rgba(255, 215, 0, 0.3);
+      border: 2px solid rgba(255,215,0,0.3);
     }
     .score {
       font-size: 1.5rem;
@@ -92,7 +92,7 @@
       color: #ffd700;
     }
     .question-container {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255,255,255,0.15);
       padding: 25px;
       border-radius: 15px;
       margin-bottom: 20px;
@@ -115,7 +115,7 @@
       margin-bottom: 20px;
     }
     .option {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255,255,255,0.2);
       border: 2px solid transparent;
       padding: 15px;
       border-radius: 10px;
@@ -125,17 +125,17 @@
       text-align: center;
     }
     .option:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255,255,255,0.3);
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .option.correct {
-      background: rgba(76, 175, 80, 0.8);
+      background: rgba(76,175,80,0.8);
       border-color: #4caf50;
       animation: correctPulse 0.6s ease;
     }
     .option.incorrect {
-      background: rgba(244, 67, 54, 0.8);
+      background: rgba(244,67,54,0.8);
       border-color: #f44336;
       animation: incorrectShake 0.6s ease;
     }
@@ -144,14 +144,14 @@
       opacity: 0.6;
     }
     @keyframes correctPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+      0% {transform: scale(1);}
+      50% {transform: scale(1.05);}
+      100% {transform: scale(1);}
     }
     @keyframes incorrectShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+      0%, 100% {transform: translateX(0);}
+      25% {transform: translateX(-5px);}
+      75% {transform: translateX(5px);}
     }
     .feedback {
       text-align: center;
@@ -167,16 +167,16 @@
       opacity: 1;
     }
     .feedback.success {
-      background: rgba(76, 175, 80, 0.3);
+      background: rgba(76,175,80,0.3);
       color: #c8e6c9;
     }
     .feedback.error {
-      background: rgba(244, 67, 54, 0.3);
+      background: rgba(244,67,54,0.3);
       color: #ffcdd2;
     }
     .final-result {
       text-align: center;
-      background: rgba(255, 215, 0, 0.2);
+      background: rgba(255,215,0,0.2);
       padding: 30px;
       border-radius: 15px;
       border: 2px solid #ffd700;
@@ -264,47 +264,25 @@
   </div>
 
   <script>
-    // بنك الأسئلة
     const questionBank = [
-      { question: "ما هو الرمز الرسمي لعملة Pi Network؟", options: ["π", "PI", "🟣", "P"], correct: 0, category: "تكنولوجيا" },
-      { question: "في أي عام تم إطلاق مشروع Pi Network؟", options: ["2018", "2019", "2020", "2021"], correct: 1, category: "تكنولوجيا" },
-      { question: "ما هي أول عملة رقمية في العالم؟", options: ["إيثيريوم", "بيتكوين", "لايتكوين", "ريبل"], correct: 1, category: "تكنولوجيا" },
-      { question: "ما هو معنى AI في التكنولوجيا؟", options: ["الذكاء الاصطناعي", "التطبيقات التفاعلية", "الإنترنت المتقدم", "الألعاب الذكية"], correct: 0, category: "تكنولوجيا" },
-      { question: "ما هي أكبر قارة في العالم؟", options: ["أفريقيا", "آسيا", "أوروبا", "أمريكا الشمالية"], correct: 1, category: "جغرافيا" },
-      { question: "ما هي عاصمة مصر؟", options: ["الإسكندرية", "القاهرة", "أسوان", "الجيزة"], correct: 1, category: "جغرافيا" },
-      { question: "أي نهر يُعتبر الأطول في العالم؟", options: ["الأمازون", "النيل", "الميسيسيبي", "اليانغتسي"], correct: 1, category: "جغرافيا" },
-      { question: "كم عدد القارات في العالم؟", options: ["5", "6", "7", "8"], correct: 2, category: "جغرافيا" },
-      { question: "ما هو العنصر الأكثر وفرة في الكون؟", options: ["الأكسجين", "الكربون", "الهيدروجين", "النيتروجين"], correct: 2, category: "علوم" },
-      { question: "كم عدد عظام جسم الإنسان البالغ؟", options: ["206", "208", "210", "204"], correct: 0, category: "علوم" },
-      { question: "ما هو الغاز الذي نتنفسه؟", options: ["الكربون", "الهيدروجين", "الأكسجين", "النيتروجين"], correct: 2, category: "علوم" },
-      { question: "ما هي سرعة الضوء تقريباً؟", options: ["200,000 كم/ث", "300,000 كم/ث", "400,000 كم/ث", "500,000 كم/ث"], correct: 1, category: "علوم" },
-      { question: "في أي عام سقطت الإمبراطورية العثمانية؟", options: ["1920", "1922", "1918", "1924"], correct: 1, category: "تاريخ" },
-      { question: "من هو أول رئيس للولايات المتحدة الأمريكية؟", options: ["توماس جيفرسون", "جون آدامز", "جورج واشنطن", "بنيامين فرانكلين"], correct: 2, category: "تاريخ" },
-      { question: "في أي قرن عاش ابن سينا؟", options: ["القرن التاسع", "القرن العاشر", "القرن الحادي عشر", "القرن الثامن"], correct: 2, category: "تاريخ" },
-      { question: "كم عدد اللاعبين في فريق كرة القدم؟", options: ["9", "10", "11", "12"], correct: 2, category: "رياضة" },
-      { question: "في أي مدينة أقيمت أولمبياد 2016؟", options: ["لندن", "ريو دي جانيرو", "طوكيو", "بكين"], correct: 1, category: "رياضة" },
-      { question: "كم مرة فازت البرازيل بكأس العالم؟", options: ["4", "5", "6", "3"], correct: 1, category: "رياضة" },
-      { question: "من هو مؤلف رواية 'مئة عام من العزلة'؟", options: ["بابلو نيرودا", "غابرييل غارسيا ماركيز", "خورخي لويس بورخيس", "أوكتافيو باث"], correct: 1, category: "أدب" },
-      { question: "ما هي أقدم لغة مكتوبة في العالم؟", options: ["العربية", "الصينية", "السومرية", "المصرية القديمة"], correct: 2, category: "أدب" },
-      { question: "من رسم لوحة 'الموناليزا'؟", options: ["مايكل أنجلو", "ليوناردو دا فينشي", "بيكاسو", "رافائيل"], correct: 1, category: "فن" },
-      { question: "في أي عام تم إنتاج فيلم 'تايتانيك'؟", options: ["1995", "1996", "1997", "1998"], correct: 2, category: "سينما" },
-      { question: "ما هو أكبر حيوان في العالم؟", options: ["الفيل الأفريقي", "الحوت الأزرق", "الزرافة", "القرش الأبيض"], correct: 1, category: "طبيعة" },
-      { question: "كم قلباً للأخطبوط؟", options: ["1", "2", "3", "4"], correct: 2, category: "طبيعة" },
-      { question: "ما هي العملة الرسمية لليابان؟", options: ["الوون", "الين", "اليوان", "الدولار"], correct: 1, category: "اقتصاد" },
-      { question: "ما هو أكبر بنك في العالم من حيث الأصول؟", options: ["بنك أمريكا", "بنك الصين الصناعي والتجاري", "تشيس", "سيتي بنك"], correct: 1, category: "اقتصاد" },
-      { question: "أي فيتامين يُنتج عند التعرض لأشعة الشمس؟", options: ["فيتامين A", "فيتامين B", "فيتامين C", "فيتامين D"], correct: 3, category: "تغذية" },
-      { question: "ما هو المكون الرئيسي في الخبز؟", options: ["الأرز", "الذرة", "القمح", "الشعير"], correct: 2, category: "تغذية" }
+      { question: "ما هو الرمز الرسمي لعملة Pi Network؟", options: ["π", "PI", "🟣", "P"], correct: 0 },
+      { question: "في أي عام تم إطلاق مشروع Pi Network؟", options: ["2018", "2019", "2020", "2021"], correct: 1 },
+      { question: "ما هي أول عملة رقمية في العالم؟", options: ["إيثيريوم", "بيتكوين", "لايتكوين", "ريبل"], correct: 1 },
+      { question: "ما هو معنى AI في التكنولوجيا؟", options: ["الذكاء الاصطناعي", "التطبيقات التفاعلية", "الإنترنت المتقدم", "الألعاب الذكية"], correct: 0 },
+      { question: "ما هي أكبر قارة في العالم؟", options: ["أفريقيا", "آسيا", "أوروبا", "أمريكا الشمالية"], correct: 1 },
+      { question: "ما هي عاصمة مصر؟", options: ["الإسكندرية", "القاهرة", "أسوان", "الجيزة"], correct: 1 },
+      { question: "أي نهر يُعتبر الأطول في العالم؟", options: ["الأمازون", "النيل", "الميسيسيبي", "اليانغتسي"], correct: 1 },
+      { question: "كم عدد القارات في العالم؟", options: ["5", "6", "7", "8"], correct: 2 },
+      { question: "ما هو العنصر الأكثر وفرة في الكون؟", options: ["الأكسجين", "الكربون", "الهيدروجين", "النيتروجين"], correct: 2 },
+      { question: "كم عدد عظام جسم الإنسان البالغ؟", options: ["206", "208", "210", "204"], correct: 0 }
     ];
 
-    // متغيرات اللعبة
     let currentQuestion = 0;
     let score = 0;
     let gameEnded = false;
     let currentGameQuestions = [];
-    let usedQuestions = JSON.parse(localStorage.getItem('usedQuestions') || '[]');
     let piUser = null;
 
-    // عناصر DOM
     const questionNumberEl = document.getElementById('question-number');
     const questionTextEl = document.getElementById('question-text');
     const optionsContainer = document.getElementById('options-container');
@@ -320,7 +298,6 @@
     const gameContainer = document.getElementById('game-container');
     const userInfoEl = document.getElementById('user-info');
 
-    // تهيئة Pi SDK
     function initializePiSDK() {
       if (typeof Pi === 'undefined') {
         loadingMessage.textContent = "⚠️ الرجاء فتح اللعبة من داخل Pi Browser.";
@@ -333,7 +310,6 @@
         api_key: "rqfi4ugck2tmbcaarbwjzjs98yql4rdra0aacuzqyv1wqp5wwvjrsp9bgdd6pnv4"
       }).then(() => {
         if (!Pi.isAuthenticated()) {
-          // إظهار زر تسجيل الدخول
           piLoginButton.classList.remove('hidden');
           loadingMessage.textContent = "يرجى تسجيل الدخول لبدء اللعب.";
         } else {
@@ -347,38 +323,27 @@
       });
     }
 
-    // تسجيل الدخول عبر Pi
     piLoginButton.addEventListener('click', () => {
       Pi.authenticate().then(() => {
         piUser = Pi.currentUser();
         piLoginButton.classList.add('hidden');
         startGame();
-      }).catch((err) => {
+      }).catch(() => {
         alert("فشل تسجيل الدخول، حاول مرة أخرى.");
       });
     });
 
-    // اختيار 10 أسئلة عشوائية دون تكرار مع حفظ الأسئلة المستخدمة محلياً
     function selectRandomQuestions() {
-      const unusedQuestions = questionBank.filter((q, index) => !usedQuestions.includes(index));
-      if (unusedQuestions.length < 10) {
-        // إعادة تعيين الأسئلة المستخدمة إذا لم تبق أسئلة كافية
-        usedQuestions = [];
-        localStorage.setItem('usedQuestions', JSON.stringify(usedQuestions));
-      }
-      const selected = [];
+      let selected = [];
       while (selected.length < 10) {
-        const randIndex = Math.floor(Math.random() * questionBank.length);
-        if (!usedQuestions.includes(randIndex) && !selected.includes(questionBank[randIndex])) {
+        let randIndex = Math.floor(Math.random() * questionBank.length);
+        if (!selected.includes(questionBank[randIndex])) {
           selected.push(questionBank[randIndex]);
-          usedQuestions.push(randIndex);
         }
       }
-      localStorage.setItem('usedQuestions', JSON.stringify(usedQuestions));
       return selected;
     }
 
-    // عرض السؤال الحالي
     function showQuestion() {
       if (currentQuestion >= currentGameQuestions.length) {
         endGame();
@@ -398,7 +363,6 @@
       });
     }
 
-    // اختيار إجابة المستخدم
     function selectAnswer(selectedIndex) {
       if (gameEnded) return;
       const q = currentGameQuestions[currentQuestion];
@@ -407,7 +371,7 @@
 
       if (selectedIndex === q.correct) {
         optionsButtons[selectedIndex].classList.add('correct');
-        score += 1;
+        score++;
         feedbackEl.textContent = "إجابة صحيحة! 🎉";
         feedbackEl.classList.add('show', 'success');
       } else {
@@ -418,17 +382,12 @@
       }
       scoreEl.textContent = score;
 
-      // صوت صحيح أو خطأ
-      playSound(selectedIndex === q.correct);
-
-      // تأخير ثم عرض السؤال التالي
       setTimeout(() => {
         currentQuestion++;
         showQuestion();
       }, 1500);
     }
 
-    // نهاية اللعبة
     function endGame() {
       gameEnded = true;
       gameArea.classList.add('hidden');
@@ -443,7 +402,6 @@
       }
     }
 
-    // إعادة تشغيل اللعبة
     function restartGame() {
       score = 0;
       currentQuestion = 0;
@@ -455,18 +413,6 @@
       showQuestion();
     }
 
-    // تشغيل صوت للإجابة الصحيحة أو الخاطئة
-    function playSound(isCorrect) {
-      const soundCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
-      const soundIncorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/boing.ogg');
-      if (isCorrect) {
-        soundCorrect.play();
-      } else {
-        soundIncorrect.play();
-      }
-    }
-
-    // بدء اللعبة بعد تسجيل الدخول
     function startGame() {
       loadingOverlay.style.display = 'none';
       gameContainer.style.display = 'block';
@@ -479,7 +425,6 @@
       showQuestion();
     }
 
-    // تشغيل الكود عند تحميل الصفحة
     window.addEventListener('load', () => {
       initializePiSDK();
     });
