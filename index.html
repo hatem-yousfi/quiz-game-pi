@@ -1,6 +1,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -518,7 +520,7 @@
 
         // تهيئة Pi SDK
      if (typeof Pi !== 'undefined') {
-   Pi.init({
+    Pi.init({
     version: "2.0",
     api_key: "rqfi4ugck2tmbcaarbwjzjs98yql4rdra0aacuzqyv1wqp5wwvjrsp9bgdd6pnv4",
     sandbox: true, // في حالة وضع الاختبار Testnet
@@ -716,9 +718,9 @@
         }
 
         // عند تحميل الصفحة
-        window.onload = () => {
+        window.addEventListener('load', async () => {
             // تحقق ما إذا كان التطبيق يعمل داخل Pi Browser
-            if (typeof Pi !== 'undefined') {
+             if (isPiBrowser && typeof Pi !== 'undefined') {
                 loadingMessage.textContent = "يرجى تسجيل الدخول باستخدام Pi لبدء اللعبة.";
                 piLoginButton.classList.remove('hidden'); // إظهار زر تسجيل الدخول
             } else {
