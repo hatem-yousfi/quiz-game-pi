@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -21,7 +22,7 @@
             justify-content: center;
             align-items: center;
             color: white;
-            overflow: hidden; /* لمنع ظهور شريط التمرير الأفقي عند ظهور شاشة التحميل */
+            overflow: hidden;
         }
 
         .loading-overlay {
@@ -39,6 +40,7 @@
             color: white;
             font-size: 1.5rem;
             text-align: center;
+            padding: 20px;
         }
 
         .loading-spinner {
@@ -65,7 +67,7 @@
             padding: 30px;
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
             border: 1px solid rgba(255, 255, 255, 0.18);
-            display: none; /* مخفي في البداية حتى يتم التحميل */
+            display: none;
         }
 
         .header {
@@ -217,7 +219,7 @@
             margin-bottom: 15px;
         }
 
-        .restart-btn, .pi-login-btn {
+        .restart-btn, .pi-login-btn, .start-btn {
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
             color: white;
             border: none;
@@ -225,27 +227,45 @@
             font-size: 1.1rem;
             border-radius: 25px;
             cursor: pointer;
-            margin-top: 20px;
+            margin: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(238, 90, 82, 0.2);
         }
 
         .pi-login-btn {
-            background: linear-gradient(45deg, #6a0dad, #8a2be2); /* لون بنفسجي لـ Pi */
+            background: linear-gradient(45deg, #6a0dad, #8a2be2);
             box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
         }
 
         .pi-login-btn:hover {
             background: linear-gradient(45deg, #8a2be2, #6a0dad);
         }
 
-        .restart-btn:hover, .pi-login-btn:hover {
+        .start-btn:hover {
+            background: linear-gradient(45deg, #20c997, #28a745);
+        }
+
+        .restart-btn:hover, .pi-login-btn:hover, .start-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(238, 90, 82, 0.4);
         }
 
         .hidden {
-            display: none;
+            display: none !important;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ffcdd2;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(244, 67, 54, 0.3);
         }
 
         @media (max-width: 600px) {
@@ -258,6 +278,9 @@
             .game-container {
                 padding: 20px;
             }
+            .loading-overlay {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -265,14 +288,19 @@
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p id="loading-message">جاري تحميل اللعبة...</p>
-        <button id="pi-login-button" class="pi-login-btn hidden">تسجيل الدخول باستخدام Pi</button>
+        <div id="loading-buttons">
+            <button id="pi-login-button" class="pi-login-btn hidden">تسجيل الدخول باستخدام Pi</button>
+            <button id="start-without-pi" class="start-btn hidden">ابدأ بدون Pi</button>
+        </div>
+        <div id="error-container"></div>
     </div>
 
     <div class="game-container" id="game-container">
         <div class="header">
             <h1 class="title">من سيربح Pi؟</h1>
             <div class="pi-icon">🟣</div>
-            <div class="user-info" id="user-info"></div> </div>
+            <div class="user-info" id="user-info"></div>
+        </div>
 
         <div class="score-container">
             <div class="score">النقاط: <span id="score">0</span> Pi 🟣</div>
@@ -298,9 +326,8 @@
     </div>
 
     <script>
-        // بنك الأسئلة الشامل - مجالات متنوعة
+        // بنك الأسئلة
         const questionBank = [
-            // تكنولوجيا وعملات رقمية
             {
                 question: "ما هو الرمز الرسمي لعملة Pi Network؟",
                 options: ["π", "PI", "🟣", "P"],
@@ -325,8 +352,6 @@
                 correct: 0,
                 category: "تكنولوجيا"
             },
-            
-            // جغرافيا
             {
                 question: "ما هي أكبر قارة في العالم؟",
                 options: ["أفريقيا", "آسيا", "أوروبا", "أمريكا الشمالية"],
@@ -351,8 +376,6 @@
                 correct: 2,
                 category: "جغرافيا"
             },
-            
-            // علوم
             {
                 question: "ما هو العنصر الأكثر وفرة في الكون؟",
                 options: ["الأكسجين", "الكربون", "الهيدروجين", "النيتروجين"],
@@ -372,33 +395,11 @@
                 category: "علوم"
             },
             {
-                question: "ما هي سرعة الضوء تقريباً؟",
-                options: ["200,000 كم/ث", "300,000 كم/ث", "400,000 كم/ث", "500,000 كم/ث"],
-                correct: 1,
-                category: "علوم"
-            },
-            
-            // تاريخ
-            {
                 question: "في أي عام سقطت الإمبراطورية العثمانية؟",
                 options: ["1920", "1922", "1918", "1924"],
                 correct: 1,
                 category: "تاريخ"
             },
-            {
-                question: "من هو أول رئيس للولايات المتحدة الأمريكية؟",
-                options: ["توماس جيفرسون", "جون آدامز", "جورج واشنطن", "بنيامين فرانكلين"],
-                correct: 2,
-                category: "تاريخ"
-            },
-            {
-                question: "في أي قرن عاش ابن سينا؟",
-                options: ["القرن التاسع", "القرن العاشر", "القرن الحادي عشر", "القرن الثامن"],
-                correct: 2,
-                category: "تاريخ"
-            },
-            
-            // رياضة
             {
                 question: "كم عدد اللاعبين في فريق كرة القدم؟",
                 options: ["9", "10", "11", "12"],
@@ -406,47 +407,11 @@
                 category: "رياضة"
             },
             {
-                question: "في أي مدينة أقيمت أولمبياد 2016؟",
-                options: ["لندن", "ريو دي جانيرو", "طوكيو", "بكين"],
-                correct: 1,
-                category: "رياضة"
-            },
-            {
-                question: "كم مرة فازت البرازيل بكأس العالم؟",
-                options: ["4", "5", "6", "3"],
-                correct: 1,
-                category: "رياضة"
-            },
-            
-            // أدب وثقافة
-            {
-                question: "من هو مؤلف رواية 'مئة عام من العزلة'؟",
-                options: ["بابلو نيرودا", "غابرييل غارسيا ماركيز", "خورخي لويس بورخيس", "أوكتافيو باث"],
-                correct: 1,
-                category: "أدب"
-            },
-            {
-                question: "ما هي أقدم لغة مكتوبة في العالم؟",
-                options: ["العربية", "الصينية", "السومرية", "المصرية القديمة"],
-                correct: 2,
-                category: "أدب"
-            },
-            
-            // فن وسينما
-            {
                 question: "من رسم لوحة 'الموناليزا'؟",
                 options: ["مايكل أنجلو", "ليوناردو دا فينشي", "بيكاسو", "رافائيل"],
                 correct: 1,
                 category: "فن"
             },
-            {
-                question: "في أي عام تم إنتاج فيلم 'تايتانيك'؟",
-                options: ["1995", "1996", "1997", "1998"],
-                correct: 2,
-                category: "سينما"
-            },
-            
-            // طبيعة وبيئة
             {
                 question: "ما هو أكبر حيوان في العالم؟",
                 options: ["الفيل الأفريقي", "الحوت الأزرق", "الزرافة", "القرش الأبيض"],
@@ -459,22 +424,12 @@
                 correct: 2,
                 category: "طبيعة"
             },
-            
-            // اقتصاد
             {
                 question: "ما هي العملة الرسمية لليابان؟",
                 options: ["الوون", "الين", "اليوان", "الدولار"],
                 correct: 1,
                 category: "اقتصاد"
             },
-            {
-                question: "ما هو أكبر بنك في العالم من حيث الأصول؟",
-                options: ["بنك أمريكا", "بنك الصين الصناعي والتجاري", "تشيس", "سيتي بنك"],
-                correct: 1,
-                category: "اقتصاد"
-            },
-            
-            // طعام وتغذية
             {
                 question: "أي فيتامين يُنتج عند التعرض لأشعة الشمس؟",
                 options: ["فيتامين A", "فيتامين B", "فيتامين C", "فيتامين D"],
@@ -486,6 +441,12 @@
                 options: ["الأرز", "الذرة", "القمح", "الشعير"],
                 correct: 2,
                 category: "تغذية"
+            },
+            {
+                question: "كم مرة فازت البرازيل بكأس العالم؟",
+                options: ["4", "5", "6", "3"],
+                correct: 1,
+                category: "رياضة"
             }
         ];
 
@@ -494,8 +455,8 @@
         let score = 0;
         let gameEnded = false;
         let currentGameQuestions = [];
-        let usedQuestions = JSON.parse(localStorage.getItem('usedQuestions') || '[]');
-        let piUser = null; // لتخزين معلومات مستخدم Pi بعد تسجيل الدخول
+        let piUser = null;
+        let piSDKInitialized = false;
 
         // عناصر DOM
         const questionNumberEl = document.getElementById('question-number');
@@ -508,36 +469,34 @@
         const finalScoreEl = document.getElementById('final-score');
         const finalMessageEl = document.getElementById('final-message');
         const piLoginButton = document.getElementById('pi-login-button');
+        const startWithoutPiButton = document.getElementById('start-without-pi');
         const loadingOverlay = document.getElementById('loading-overlay');
         const loadingMessage = document.getElementById('loading-message');
         const gameContainer = document.getElementById('game-container');
-        const userInfoEl = document.getElementById('user-info'); // عنصر جديد لعرض اسم المستخدم
-
-
-        // تهيئة Pi SDK
-      Pi.init({
-            version: "2.0",
-            api_key: "rqfi4ugck2tmbcaarbwjzjs98yql4rdra0aacuzqyv1wqp5wwvjrsp9bgdd6pnv4", // الصق المفتاح الذي نسخته هنا
-            sandbox: true, // تأكد من وجود هذا السطر إذا كنت في وضع الاختبار
-        });
+        const userInfoEl = document.getElementById('user-info');
+        const errorContainer = document.getElementById('error-container');
 
         // وظائف الصوت
         function createBeep(frequency, duration, type = 'sine') {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
-            oscillator.type = type;
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
         }
 
         function playSuccessSound() {
@@ -550,45 +509,18 @@
             createBeep(300, 0.5, 'sawtooth');
         }
 
-        // اختيار أسئلة عشوائية مع تجنب التكرار
+        // عرض رسالة خطأ
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorContainer.appendChild(errorDiv);
+        }
+
+        // اختيار أسئلة عشوائية
         function selectRandomQuestions() {
-            let availableQuestions = questionBank.filter(q => !usedQuestions.includes(q.question));
-            
-            if (availableQuestions.length < 10) {
-                usedQuestions = usedQuestions.slice(-2);
-                availableQuestions = questionBank.filter(q => !usedQuestions.includes(q.question));
-            }
-            
-            const shuffled = availableQuestions.sort(() => 0.5 - Math.random());
-            
-            currentGameQuestions = [];
-            const categories = {};
-            
-            for (let question of shuffled) {
-                if (currentGameQuestions.length >= 10) break;
-                
-                if (!categories[question.category] || categories[question.category] < 3) {
-                    currentGameQuestions.push(question);
-                    categories[question.category] = (categories[question.category] || 0) + 1;
-                }
-            }
-            
-            while (currentGameQuestions.length < 10) {
-                for (let question of shuffled) {
-                    if (!currentGameQuestions.includes(question)) {
-                        currentGameQuestions.push(question);
-                        if (currentGameQuestions.length >= 10) break;
-                    }
-                }
-            }
-            
-            currentGameQuestions.forEach(q => {
-                if (!usedQuestions.includes(q.question)) {
-                    usedQuestions.push(q.question);
-                }
-            });
-            
-            localStorage.setItem('usedQuestions', JSON.stringify(usedQuestions));
+            const shuffled = questionBank.sort(() => 0.5 - Math.random());
+            currentGameQuestions = shuffled.slice(0, 10);
         }
 
         // عرض السؤال الحالي
@@ -611,7 +543,6 @@
                 optionElement.className = 'option';
                 optionElement.textContent = option;
                 optionElement.onclick = () => selectOption(index);
-                
                 optionsContainer.appendChild(optionElement);
             });
         }
@@ -675,55 +606,123 @@
             displayQuestion();
         }
 
-        // وظائف Pi Network SDK
-
-        // تسجيل الدخول بـ Pi
-        piLoginButton.addEventListener('click', async () => {
-            loadingMessage.textContent = "جاري تسجيل الدخول باستخدام Pi...";
-            try {
-                // تطلب من المستخدم الموافقة على الوصول إلى username (لغرض العرض فقط)
-                const authData = await Pi.authenticate(['username']);
-                console.log('Pi Authentication Success:', authData);
-                piUser = authData.user;
-                userInfoEl.textContent = `مرحباً بك، ${piUser.username}!`; // عرض اسم المستخدم
-                loadingMessage.textContent = `مرحباً بك، ${piUser.username}!`;
-                piLoginButton.classList.add('hidden'); // إخفاء زر تسجيل الدخول
-                setTimeout(() => {
-                    loadingOverlay.classList.add('hidden');
-                    gameContainer.style.display = 'block'; // عرض محتوى اللعبة
-                    startGame(); // بدء اللعبة بعد تسجيل الدخول
-                }, 1500); // إظهار رسالة الترحيب لفترة قصيرة
-            } catch (error) {
-                console.error('Pi Authentication Failed:', error);
-                loadingMessage.textContent = `فشل تسجيل الدخول بـ Pi: ${error.message}. حاول مرة أخرى.`;
-                // يمكنك إبقاء زر تسجيل الدخول مرئياً للسماح بإعادة المحاولة
-                piLoginButton.classList.remove('hidden'); // إعادة إظهار الزر إذا فشل تسجيل الدخول
-            }
-        });
-
-        // وظيفة بدء اللعبة بعد التحميل أو تسجيل الدخول
+        // بدء اللعبة
         function startGame() {
+            loadingOverlay.classList.add('hidden');
+            gameContainer.style.display = 'block';
             selectRandomQuestions();
             displayQuestion();
         }
 
-        // عند تحميل الصفحة
-        window.onload = () => {
-            // تحقق ما إذا كان التطبيق يعمل داخل Pi Browser
-            if (typeof Pi !== 'undefined') {
-                loadingMessage.textContent = "يرجى تسجيل الدخول باستخدام Pi لبدء اللعبة.";
-                piLoginButton.classList.remove('hidden'); // إظهار زر تسجيل الدخول
-            } else {
-                // ليس في Pi Browser
-                loadingMessage.textContent = "يرجى فتح هذه اللعبة في Pi Browser لتجربة الميزات الكاملة لـ Pi Network.";
-                piLoginButton.classList.add('hidden'); // إخفاء زر تسجيل الدخول
-                setTimeout(() => {
-                    loadingOverlay.classList.add('hidden');
-                    gameContainer.style.display = 'block'; // عرض اللعبة بدون وظائف Pi
-                    startGame(); // بدء اللعبة بدون ربط Pi
-                }, 3000); // إعطاء المستخدم فرصة لقراءة الرسالة
+        // تهيئة Pi SDK
+        function initializePiSDK() {
+            try {
+                // تحقق من وجود Pi SDK
+                if (typeof window.Pi === 'undefined') {
+                    throw new Error('Pi SDK غير متوفر');
+                }
+
+                // تهيئة Pi SDK
+                Pi.init({
+                    version: "2.0",
+                    sandbox: true // استخدم sandbox للاختبار
+                });
+
+                piSDKInitialized = true;
+                console.log('Pi SDK initialized successfully');
+                return true;
+            } catch (error) {
+                console.error('فشل في تهيئة Pi SDK:', error);
+                showError(`فشل في تهيئة Pi SDK: ${error.message}`);
+                return false;
             }
-        };
+        }
+
+        // تسجيل الدخول بـ Pi
+        async function authenticateWithPi() {
+            if (!piSDKInitialized) {
+                showError('Pi SDK غير متوفر');
+                return false;
+            }
+
+            try {
+                loadingMessage.textContent = "جاري تسجيل الدخول باستخدام Pi...";
+                
+                // طلب المصادقة
+                const authResult = await Pi.authenticate(['username'], function(scopes) {
+                    console.log('Scopes approved:', scopes);
+                });
+
+                console.log('Authentication result:', authResult);
+                
+                if (authResult && authResult.user) {
+                    piUser = authResult.user;
+                    userInfoEl.textContent = `مرحباً بك، ${piUser.username}!`;
+                    loadingMessage.textContent = `تم تسجيل الدخول بنجاح! مرحباً ${piUser.username}`;
+                    
+                    setTimeout(() => {
+                        startGame();
+                    }, 1500);
+                    
+                    return true;
+                } else {
+                    throw new Error('لم يتم الحصول على بيانات المستخدم');
+                }
+            } catch (error) {
+                console.error('Pi authentication error:', error);
+                showError(`فشل تسجيل الدخول: ${error.message}`);
+                loadingMessage.textContent = "فشل تسجيل الدخول باستخدام Pi";
+                piLoginButton.classList.remove('hidden');
+                return false;
+            }
+        }
+
+        // التحقق من بيئة التشغيل
+        function checkEnvironment() {
+            const userAgent = navigator.userAgent;
+            const isPiBrowser = userAgent.includes('PiBrowser') || userAgent.includes('Pi Browser');
+            
+            loadingMessage.textContent = "جاري تحميل اللعبة...";
+            
+            setTimeout(() => {
+                if (typeof window.Pi !== 'undefined') {
+                    // Pi SDK متوفر
+                    if (initializePiSDK()) {
+                        loadingMessage.textContent = "يرجى تسجيل الدخول باستخدام Pi لبدء اللعبة";
+                        piLoginButton.classList.remove('hidden');
+                        startWithoutPiButton.classList.remove('hidden');
+                    } else {
+                        // فشل في تهيئة Pi SDK
+                        loadingMessage.textContent = "حدث خطأ في تحميل Pi SDK";
+                        startWithoutPiButton.classList.remove('hidden');
+                    }
+                } else {
+                    // Pi SDK غير متوفر
+                    if (isPiBrowser) {
+                        loadingMessage.textContent = "Pi SDK غير متوفر في هذا المتصفح";
+                        showError('يرجى التأكد من تحديث Pi Browser أو المحاولة لاحقاً');
+                    } else {
+                        loadingMessage.textContent = "للحصول على التجربة الكاملة، يرجى فتح اللعبة في Pi Browser";
+                    }
+                    startWithoutPiButton.classList.remove('hidden');
+                }
+            }, 2000);
+        }
+
+        // إضافة مستمعي الأحداث
+        piLoginButton.addEventListener('click', authenticateWithPi);
+        startWithoutPiButton.addEventListener('click', startGame);
+
+        // تشغيل اللعبة عند التحميل
+        window.addEventListener('load', () => {
+            checkEnvironment();
+        });
+
+        // إضافة مستمع للأخطاء العامة
+        window.addEventListener('error', (event) => {
+            console.error('خطأ في اللعبة:', event.error);
+            showError(`حدث خطأ: ${event.error.message}`);
+        });
     </script>
 </body>
 </html>
