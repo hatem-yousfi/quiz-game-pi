@@ -268,6 +268,15 @@
             border: 1px solid rgba(244, 67, 54, 0.3);
         }
 
+        .debug-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
         @media (max-width: 600px) {
             .options-container {
                 grid-template-columns: 1fr;
@@ -288,6 +297,7 @@
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p id="loading-message">جاري تحميل اللعبة...</p>
+        <div id="debug-info" class="debug-info"></div>
         <div id="loading-buttons">
             <button id="pi-login-button" class="pi-login-btn hidden">تسجيل الدخول باستخدام Pi</button>
             <button id="start-without-pi" class="start-btn hidden">ابدأ بدون Pi</button>
@@ -475,6 +485,7 @@
         const gameContainer = document.getElementById('game-container');
         const userInfoEl = document.getElementById('user-info');
         const errorContainer = document.getElementById('error-container');
+        const debugInfo = document.getElementById('debug-info');
 
         // وظائف الصوت
         function createBeep(frequency, duration, type = 'sine') {
@@ -509,12 +520,19 @@
             createBeep(300, 0.5, 'sawtooth');
         }
 
+        // تحديث معلومات التصحيح
+        function updateDebugInfo(message) {
+            debugInfo.textContent = message;
+            console.log('Debug:', message);
+        }
+
         // عرض رسالة خطأ
         function showError(message) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.textContent = message;
             errorContainer.appendChild(errorDiv);
+            updateDebugInfo(`خطأ: ${message}`);
         }
 
         // اختيار أسئلة عشوائية
@@ -614,51 +632,33 @@
             displayQuestion();
         }
 
-        // تهيئة Pi SDK
-        function initializePiSDK() {
-            try {
-                // تحقق من وجود Pi SDK
-                if (typeof window.Pi === 'undefined') {
-                    throw new Error('Pi SDK غير متوفر');
-                }
-
-                // تهيئة Pi SDK
-                Pi.init({
-                    version: "2.0",
-                    sandbox: true // استخدم sandbox للاختبار
-                });
-
-                piSDKInitialized = true;
-                console.log('Pi SDK initialized successfully');
-                return true;
-            } catch (error) {
-                console.error('فشل في تهيئة Pi SDK:', error);
-                showError(`فشل في تهيئة Pi SDK: ${error.message}`);
-                return false;
-            }
-        }
-
         // تسجيل الدخول بـ Pi
         async function authenticateWithPi() {
-            if (!piSDKInitialized) {
+            if (!window.Pi) {
                 showError('Pi SDK غير متوفر');
                 return false;
             }
 
             try {
                 loadingMessage.textContent = "جاري تسجيل الدخول باستخدام Pi...";
+                updateDebugInfo("بدء عملية المصادقة مع Pi...");
                 
+                // إخفاء الأزرار أثناء المصادقة
+                piLoginButton.classList.add('hidden');
+                startWithoutPiButton.classList.add('hidden');
+
                 // طلب المصادقة
-                const authResult = await Pi.authenticate(['username'], function(scopes) {
-                    console.log('Scopes approved:', scopes);
+                const authResult = await window.Pi.authenticate(['username', 'payments'], function(scopes) {
+                    updateDebugInfo(`تم الموافقة على الصلاحيات: ${scopes.join(', ')}`);
                 });
 
-                console.log('Authentication result:', authResult);
+                updateDebugInfo(`نتيجة المصادقة: ${JSON.stringify(authResult)}`);
                 
-                if (authResult && authResult.user) {
+                if (authResult && authResult.accessToken) {
                     piUser = authResult.user;
                     userInfoEl.textContent = `مرحباً بك، ${piUser.username}!`;
                     loadingMessage.textContent = `تم تسجيل الدخول بنجاح! مرحباً ${piUser.username}`;
+                    updateDebugInfo(`تم تسجيل الدخول بنجاح: ${piUser.username}`);
                     
                     setTimeout(() => {
                         startGame();
@@ -666,38 +666,58 @@
                     
                     return true;
                 } else {
-                    throw new Error('لم يتم الحصول على بيانات المستخدم');
+                    throw new Error('لم يتم الحصول على رمز الوصول');
                 }
             } catch (error) {
                 console.error('Pi authentication error:', error);
                 showError(`فشل تسجيل الدخول: ${error.message}`);
                 loadingMessage.textContent = "فشل تسجيل الدخول باستخدام Pi";
+                // إعادة إظهار الأزرار عند الفشل
                 piLoginButton.classList.remove('hidden');
+                startWithoutPiButton.classList.remove('hidden');
                 return false;
             }
         }
 
         // التحقق من بيئة التشغيل
         function checkEnvironment() {
+            updateDebugInfo("بدء فحص البيئة...");
+            
             const userAgent = navigator.userAgent;
             const isPiBrowser = userAgent.includes('PiBrowser') || userAgent.includes('Pi Browser');
             
-            loadingMessage.textContent = "جاري تحميل اللعبة...";
+            updateDebugInfo(`متصفح Pi: ${isPiBrowser ? 'نعم' : 'لا'}`);
+            updateDebugInfo(`User Agent: ${userAgent}`);
             
-            setTimeout(() => {
-                if (typeof window.Pi !== 'undefined') {
-                    // Pi SDK متوفر
-                    if (initializePiSDK()) {
+            loadingMessage.textContent = "جاري فحص بيئة التشغيل...";
+            
+            // إنتظار تحميل Pi SDK
+            const checkPiSDK = () => {
+                if (window.Pi) {
+                    updateDebugInfo("تم العثور على Pi SDK");
+                    loadingMessage.textContent = "تم العثور على Pi SDK - جاري التهيئة...";
+                    
+                    try {
+                        // تهيئة Pi SDK
+                        window.Pi.init({
+                            version: "2.0",
+                            sandbox: true // استخدم sandbox للاختبار
+                        });
+                        
+                        piSDKInitialized = true;
+                        updateDebugInfo("تم تهيئة Pi SDK بنجاح");
                         loadingMessage.textContent = "يرجى تسجيل الدخول باستخدام Pi لبدء اللعبة";
                         piLoginButton.classList.remove('hidden');
                         startWithoutPiButton.classList.remove('hidden');
-                    } else {
-                        // فشل في تهيئة Pi SDK
+                        
+                    } catch (error) {
+                        updateDebugInfo(`خطأ في تهيئة Pi SDK: ${error.message}`);
+                        showError(`فشل في تهيئة Pi SDK: ${error.message}`);
                         loadingMessage.textContent = "حدث خطأ في تحميل Pi SDK";
                         startWithoutPiButton.classList.remove('hidden');
                     }
                 } else {
-                    // Pi SDK غير متوفر
+                    updateDebugInfo("Pi SDK غير متوفر");
                     if (isPiBrowser) {
                         loadingMessage.textContent = "Pi SDK غير متوفر في هذا المتصفح";
                         showError('يرجى التأكد من تحديث Pi Browser أو المحاولة لاحقاً');
@@ -706,7 +726,19 @@
                     }
                     startWithoutPiButton.classList.remove('hidden');
                 }
-            }, 2000);
+            };
+
+            // فحص Pi SDK بعد تأخير قصير
+            setTimeout(checkPiSDK, 1000);
+            
+            // فحص إضافي بعد 5 ثوانٍ في حالة عدم التحميل
+            setTimeout(() => {
+                if (!piSDKInitialized && !window.Pi) {
+                    updateDebugInfo("انتهت مهلة انتظار تحميل Pi SDK");
+                    loadingMessage.textContent = "انتهت مهلة انتظار تحميل Pi SDK";
+                    startWithoutPiButton.classList.remove('hidden');
+                }
+            }, 5000);
         }
 
         // إضافة مستمعي الأحداث
@@ -715,14 +747,11 @@
 
         // تشغيل اللعبة عند التحميل
         window.addEventListener('load', () => {
+            updateDebugInfo("تم تحميل الصفحة - بدء فحص البيئة");
             checkEnvironment();
         });
 
         // إضافة مستمع للأخطاء العامة
         window.addEventListener('error', (event) => {
             console.error('خطأ في اللعبة:', event.error);
-            showError(`حدث خطأ: ${event.error.message}`);
-        });
-    </script>
-</body>
-</html>
+            showError(`حدث خطأ: ${
